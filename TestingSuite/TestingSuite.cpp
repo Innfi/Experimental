@@ -8,9 +8,6 @@ namespace TestingSuite
 	class DummyElementGenerator {
 	public:
 		DummyElementGenerator(int count) {
-			InitIndex();
-			InitElements();
-
 			elementCount = count;
 			currentCount = 0;
 		}
@@ -40,14 +37,11 @@ namespace TestingSuite
 			return true;
 		}
 
-		int element_[1000];		
+		int element_[1000] = { 0 };
+		int elementIndex_[1000] = { 0 };
+
 		int elementCount;
 		int currentCount;
-
-		int elementIndex_[1000];
-	private:
-		void InitIndex() { for (int i = 0; i < 1000; ++i) elementIndex_[i] = 0; }		
-		void InitElements() { for (int i = 0; i < 100; ++i) element_[i] = 0; }
 
 	};
 
@@ -97,6 +91,113 @@ namespace TestingSuite
 
 				Assert::AreEqual(currentElement < nextElement, true);
 			}
+		}
+	};
+
+	TEST_CLASS(TestSingleLinkedList) {
+	public:
+		TEST_METHOD(CallLinkedList) {
+
+			Experimental::LinkedList list;
+		}
+
+		TEST_METHOD(InitiallyEmpty) {
+			Experimental::LinkedList list;
+
+			Assert::AreEqual(list.Empty(), true);
+		}
+
+		TEST_METHOD(InsertNGetSingleNode) {
+			Experimental::LinkedList list;
+
+			int value = 1;
+			list.Insert(value);
+
+			auto node = list.Head();
+
+			Assert::AreEqual(node->value_, value);
+		}
+
+		TEST_METHOD(InsertMultiNodes) {
+			int count = 10;
+			DummyElementGenerator gen(count);
+			Assert::AreEqual(gen.SetElements(), true);
+
+			Experimental::LinkedList list;
+
+			for (int i = 0; i < count; i++) list.Insert(gen.element_[i]);
+
+			AssertElementOrder(gen, list.Head());
+		}
+
+		void AssertElementOrder(const DummyElementGenerator& gen, Experimental::Node* node) {
+			for (int i = 0; i < gen.currentCount; i++) {
+				Assert::AreEqual(gen.element_[i], node->value_);
+				node = node->next_.get();
+			}
+		}
+	};
+
+	TEST_CLASS(TestRBTree) {
+	public:
+		TEST_METHOD(TestCallRBTreeEmpty) {
+			Experimental::RbTree rb;
+
+			/*Assert::AreEqual(rb.Empty(), true);
+
+			auto rootElement = rb.Root();
+			Assert::AreEqual((rootElement == nullptr), true);*/
+		}
+
+		//TEST_METHOD(TestSingleElementBlack)
+		//{
+		//	Experimental::RbElement firstElement = {Experimental::RbElementType::Black, 1};
+		//	
+		//	Experimental::RbTree rb;
+		//	//rb.Insert(firstElement);
+		//	
+		//	Assert::AreEqual(rb.Empty(), false);
+
+		//	auto rootElement = rb.Root();
+		//	Assert::AreEqual((rootElement->type_ == firstElement.type_), true);
+		//	Assert::AreEqual((rootElement->value_ == firstElement.value_), true);
+		//}
+
+		//TEST_METHOD(TestFirstRedElement)
+		//{
+		//	auto blackElement = GetBlackElement(2);
+		//	auto redElement = GetRedElement(1);
+
+		//	Experimental::RbTree rb;
+		//	rb.Insert(blackElement);
+		//	rb.Insert(redElement);
+
+		//	auto rootElement = rb.Root();
+		//	AssertSameElement(blackElement, *rootElement);
+
+		//	auto left = rootElement->left;
+		//	AssertSameElement(redElement, *left);
+		//}
+
+		//Experimental::RbElement GetBlackElement(int value) {
+		//	return Experimental::RbElement{ Experimental::RbElementType::Black, value};
+		//}
+
+		//Experimental::RbElement GetRedElement(int value) {
+		//	return Experimental::RbElement{ Experimental::RbElementType::Red, value };
+		//}
+
+		//void AssertSameElement(Experimental::RbElement lhs, Experimental::RbElement rhs) {
+		//	Assert::AreEqual((lhs.type_ == rhs.type_), true);
+		//	Assert::AreEqual((lhs.value_ == rhs.value_), true);
+		//}
+
+		TEST_METHOD(TestUniquePtr) {
+			std::unique_ptr<int> test;
+
+			auto mysterious = test.get();
+
+			int dummy = 1;
 		}
 	};
 }

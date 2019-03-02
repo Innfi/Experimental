@@ -152,7 +152,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Heap.hpp" />
+    <ClInclude Include="LinkedList.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RBTree.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArrayList.cpp" />

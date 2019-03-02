@@ -15,3 +15,5 @@
 #include <memory>
 #include <cstdlib>
 #include "../Experimental/Heap.hpp"
+#include "../Experimental/LinkedList.hpp"
+#include "../Experimental/RBTree.hpp"
