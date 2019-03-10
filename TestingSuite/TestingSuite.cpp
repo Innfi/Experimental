@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 
 namespace TestingSuite
 {
@@ -45,7 +45,46 @@ namespace TestingSuite
 
 	};
 
-	TEST_CLASS(TestHeap)
+	TEST_CLASS(Exp1SingleLinkedList) {
+	public:
+		TEST_METHOD(InitiallyEmpty) {
+			Experimental::LinkedList list;
+
+			Assert::AreEqual(list.Empty(), true);
+		}
+
+		TEST_METHOD(InsertNGetSingleNode) {
+			Experimental::LinkedList list;
+
+			int value = 1;
+			list.Insert(value);
+
+			auto node = list.Head();
+
+			Assert::AreEqual(node->value_, value);
+		}
+
+		TEST_METHOD(InsertMultiNodes) {
+			int count = 10;
+			DummyElementGenerator gen(count);
+			Assert::AreEqual(gen.SetElements(), true);
+
+			Experimental::LinkedList list;
+
+			for (int i = 0; i < count; i++) list.Insert(gen.element_[i]);
+
+			AssertElementOrder(gen, list.Head());
+		}
+
+		void AssertElementOrder(const DummyElementGenerator& gen, Experimental::Node* node) {
+			for (int i = 0; i < gen.currentCount; i++) {
+				Assert::AreEqual(gen.element_[i], node->value_);
+				node = node->next_.get();
+			}
+		}
+	};
+
+	TEST_CLASS(Exp2Heap)
 	{
 	public:
 		TEST_METHOD(TestHeapSingleElement) {
@@ -94,110 +133,93 @@ namespace TestingSuite
 		}
 	};
 
-	TEST_CLASS(TestSingleLinkedList) {
+	TEST_CLASS(Exp3RBTree) {
 	public:
-		TEST_METHOD(CallLinkedList) {
+		TEST_METHOD(Test1SingleElementBlack) {
+			using namespace Experimental;
 
-			Experimental::LinkedList list;
+			int first = 1;
+			RbTree tree;
+			tree.Insert(first);
+
+			auto root = tree.Root().get();
+
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(first, root->value_);
 		}
 
-		TEST_METHOD(InitiallyEmpty) {
-			Experimental::LinkedList list;
+		TEST_METHOD(Test2Insert3NodesBalancedOrder) {
+			using namespace Experimental;
 
-			Assert::AreEqual(list.Empty(), true);
+			RbTree tree;
+			tree.Insert(2);
+			tree.Insert(1);			
+			tree.Insert(3);
+
+			auto root = tree.Root().get();
+
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 2);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, true);
+			Assert::AreEqual(left->value_, 1);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, true);
+			Assert::AreEqual(right->value_, 3);
 		}
 
-		TEST_METHOD(InsertNGetSingleNode) {
-			Experimental::LinkedList list;
+		TEST_METHOD(Test3LeftRotation) {
+			using namespace Experimental;
 
-			int value = 1;
-			list.Insert(value);
+			RbTree tree;
+			tree.Insert(1);
+			tree.Insert(2);
+			tree.Insert(3);
 
-			auto node = list.Head();
+			auto root = tree.Root().get();
 
-			Assert::AreEqual(node->value_, value);
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 2);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, true);
+			Assert::AreEqual(left->value_, 1);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, true);
+			Assert::AreEqual(right->value_, 3);
 		}
 
-		TEST_METHOD(InsertMultiNodes) {
-			int count = 10;
-			DummyElementGenerator gen(count);
-			Assert::AreEqual(gen.SetElements(), true);
+		TEST_METHOD(Test4RLRotation) {
+			using namespace Experimental;
 
-			Experimental::LinkedList list;
+			RbTree tree;
+			tree.Insert(1);
+			tree.Insert(6);
+			tree.Insert(4);
 
-			for (int i = 0; i < count; i++) list.Insert(gen.element_[i]);
+			auto root = tree.Root().get();
 
-			AssertElementOrder(gen, list.Head());
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 4);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, true);
+			Assert::AreEqual(left->value_, 1);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, true);
+			Assert::AreEqual(right->value_, 6);
 		}
 
-		void AssertElementOrder(const DummyElementGenerator& gen, Experimental::Node* node) {
-			for (int i = 0; i < gen.currentCount; i++) {
-				Assert::AreEqual(gen.element_[i], node->value_);
-				node = node->next_.get();
-			}
-		}
-	};
-
-	TEST_CLASS(TestRBTree) {
-	public:
-		TEST_METHOD(TestCallRBTreeEmpty) {
-			Experimental::RbTree rb;
-
-			/*Assert::AreEqual(rb.Empty(), true);
-
-			auto rootElement = rb.Root();
-			Assert::AreEqual((rootElement == nullptr), true);*/
+		TEST_METHOD(Test5RightRotation) {
+			
 		}
 
-		//TEST_METHOD(TestSingleElementBlack)
-		//{
-		//	Experimental::RbElement firstElement = {Experimental::RbElementType::Black, 1};
-		//	
-		//	Experimental::RbTree rb;
-		//	//rb.Insert(firstElement);
-		//	
-		//	Assert::AreEqual(rb.Empty(), false);
-
-		//	auto rootElement = rb.Root();
-		//	Assert::AreEqual((rootElement->type_ == firstElement.type_), true);
-		//	Assert::AreEqual((rootElement->value_ == firstElement.value_), true);
-		//}
-
-		//TEST_METHOD(TestFirstRedElement)
-		//{
-		//	auto blackElement = GetBlackElement(2);
-		//	auto redElement = GetRedElement(1);
-
-		//	Experimental::RbTree rb;
-		//	rb.Insert(blackElement);
-		//	rb.Insert(redElement);
-
-		//	auto rootElement = rb.Root();
-		//	AssertSameElement(blackElement, *rootElement);
-
-		//	auto left = rootElement->left;
-		//	AssertSameElement(redElement, *left);
-		//}
-
-		//Experimental::RbElement GetBlackElement(int value) {
-		//	return Experimental::RbElement{ Experimental::RbElementType::Black, value};
-		//}
-
-		//Experimental::RbElement GetRedElement(int value) {
-		//	return Experimental::RbElement{ Experimental::RbElementType::Red, value };
-		//}
-
-		//void AssertSameElement(Experimental::RbElement lhs, Experimental::RbElement rhs) {
-		//	Assert::AreEqual((lhs.type_ == rhs.type_), true);
-		//	Assert::AreEqual((lhs.value_ == rhs.value_), true);
-		//}
-
-		TEST_METHOD(TestUniquePtr) {
-			std::unique_ptr<int> test;
-
-			auto mysterious = test.get();
-
-			int dummy = 1;
+		TEST_METHOD(Test6LRRotation) {
+			
 		}
 	};
 }
