@@ -20,6 +20,14 @@ namespace Experimental
 		bool isLeft_;
 	};
 
+	enum DoubleRedType {
+		Initial = 0,
+		RR,
+		RL,
+		LL,
+		LR
+	};
+
 	class RbTree {
 	public:
 		RbTree() : root_(nullptr) {}
@@ -74,7 +82,7 @@ namespace Experimental
 
 			if (isDoubleRed(node)) {
 				if (isRedAunt(node)) { //red aunt: recolor
-				
+					doRecoloring(node);
 				}
 				else { //black aunt: rotation
 					doRotation(node);
@@ -100,15 +108,35 @@ namespace Experimental
 			return aunt->isRed_;
 		}
 
+		void doRecoloring(std::shared_ptr<RbNode> node) {
+			auto grandParent = node->parent_->parent_;
+			grandParent->isRed_ = true;
+			grandParent->leftChild_->isRed_ = false;
+			grandParent->rightChild_->isRed_ = false;
+		}
+
 		void doRotation(std::shared_ptr<RbNode> node) {
 			std::shared_ptr<RbNode> newParent;
 
-			if (!node->isLeft_ && !(node->parent_->isLeft_)) { //left rotation
+			auto doubleRedType = ToDoubleRedType(node);
+			switch (doubleRedType)
+			{
+			case Experimental::RR:
 				newParent = leftRotation(node);
-			}
-			else if (node->isLeft_ && !(node->parent_->isLeft_)) { //RL rotation
+				break;
+			case Experimental::RL:
 				rightSingleRotation(node);
 				newParent = leftRotation(node->rightChild_);
+				break;
+			case Experimental::LL:
+				newParent = rightRotation(node);
+				break;
+			case Experimental::LR:
+				leftSingleRotation(node);
+				newParent = rightRotation(node->leftChild_);
+				break;
+			default:				
+				break;
 			}
 
 			newParent->isRed_ = false;
@@ -116,15 +144,37 @@ namespace Experimental
 			newParent->rightChild_->isRed_ = true;
 		}
 
+		DoubleRedType ToDoubleRedType(std::shared_ptr<RbNode> node) {
+			if (!node->isLeft_ && !(node->parent_->isLeft_)) { //left rotation
+				return DoubleRedType::RR;
+			}
+			else if (node->isLeft_ && !(node->parent_->isLeft_)) { //RL rotation
+				return DoubleRedType::RL;
+			}
+			else if (node->isLeft_ && (node->parent_->isLeft_)) { //right rotation
+				return DoubleRedType::LL;
+			}
+			else if (!node->isLeft_ && (node->parent_->isLeft_)) { //LR rotation 
+				return DoubleRedType::LR;
+			}
+
+			return DoubleRedType::Initial;
+		}
+
 		std::shared_ptr<RbNode> leftRotation(std::shared_ptr<RbNode> node) {
 			auto newParent = node->parent_;
 			auto newLeft = newParent->parent_;
+			bool isLeftChild = newLeft->isLeft_;
 			auto unchangedParent = newLeft->parent_;
+
+			newParent->parent_ = unchangedParent;
+			if (unchangedParent != nullptr) {
+				if (isLeftChild) unchangedParent->leftChild_ = newParent;
+				else unchangedParent->rightChild_ = newParent;
+			}
 
 			newParent->leftChild_ = newLeft;
 			newLeft->parent_ = newParent;
-
-			newParent->parent_ = unchangedParent;
 
 			return newParent;
 		}
@@ -140,6 +190,36 @@ namespace Experimental
 			newRight->parent_ = node;
 
 			newRight->leftChild_ = nullptr;			
+		}
+
+		std::shared_ptr<RbNode> rightRotation(std::shared_ptr<RbNode> node) {
+			auto newParent = node->parent_;
+			auto newRight = newParent->parent_;
+			bool isLeftChild = newRight->isLeft_;
+			auto unchangedParent = newRight->parent_;
+
+			newParent->parent_ = unchangedParent;
+			if (unchangedParent != nullptr) {
+				if (isLeftChild) unchangedParent->leftChild_ = newParent;
+				else unchangedParent->rightChild_ = newParent;
+			}
+
+			newParent->rightChild_ = newRight;
+			newRight->parent_ = newParent;
+
+			return newParent;
+		}
+
+		void leftSingleRotation(std::shared_ptr<RbNode> node) {
+			auto unchangedParent = node->parent_->parent_;
+			auto newChild = node->parent_;
+
+			node->parent_ = unchangedParent;
+			unchangedParent->leftChild_ = node;
+
+			node->leftChild_ = newChild;
+			newChild->parent_ = node;
+			newChild->rightChild_ = nullptr;
 		}
 
 		void setRoot() {

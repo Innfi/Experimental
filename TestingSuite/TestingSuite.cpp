@@ -215,10 +215,75 @@ namespace TestingSuite
 		}
 
 		TEST_METHOD(Test5RightRotation) {
-			
+			using namespace Experimental;
+
+			RbTree tree;
+			tree.Insert(5);
+			tree.Insert(3);
+			tree.Insert(1);
+
+			auto root = tree.Root().get();
+
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 3);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, true);
+			Assert::AreEqual(left->value_, 1);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, true);
+			Assert::AreEqual(right->value_, 5);
 		}
 
 		TEST_METHOD(Test6LRRotation) {
+			using namespace Experimental;
+
+			RbTree tree;
+			tree.Insert(10);
+			tree.Insert(4);
+			tree.Insert(5);
+
+			auto root = tree.Root().get();
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 5);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, true);
+			Assert::AreEqual(left->value_, 4);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, true);
+			Assert::AreEqual(right->value_, 10);
+		}
+
+		TEST_METHOD(Test7Recoloring) {
+			using namespace Experimental;
+
+			RbTree tree;
+			tree.Insert(5);
+			tree.Insert(2);
+			tree.Insert(7);
+			tree.Insert(8);
+
+			auto root = tree.Root().get();
+			Assert::AreEqual(root->isRed_, false);
+			Assert::AreEqual(root->value_, 5);
+
+			auto left = root->leftChild_.get();
+			Assert::AreEqual(left->isRed_, false);
+			Assert::AreEqual(left->value_, 2);
+
+			auto right = root->rightChild_.get();
+			Assert::AreEqual(right->isRed_, false);
+			Assert::AreEqual(right->value_, 7);
+
+			auto leaf = right->rightChild_.get();
+			Assert::AreEqual(leaf->isRed_, true);
+			Assert::AreEqual(leaf->value_, 8);
+		}
+
+		TEST_METHOD(Test8AssertRBAttrs) {
 			
 		}
 	};
