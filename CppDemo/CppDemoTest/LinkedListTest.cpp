@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "../CppDemo/LinkedList.hpp"
+#include "LinkedList.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-namespace CppDemo
+namespace CppDemoLinkedList
 {
-	TEST_CLASS(CppDemoTest) {
+	TEST_CLASS(CppDemoLinkedListTest) {
 	public:
 		TEST_METHOD(Test0CallNode) {
 			Node<int> node;
@@ -112,6 +112,26 @@ namespace CppDemo
 			Assert::AreEqual(searchResult->Element, 5);
 			Assert::AreEqual(searchResult->Next()->Element, 7);
 			Assert::AreEqual(searchResult->Prev()->Element, 3);
+		}
+
+		TEST_METHOD(Test2RemoveItem) {
+			LinkedList<int> ll;
+			ll.Insert(1);
+			ll.Insert(3);
+			ll.Insert(5);
+			ll.Insert(7);
+			ll.Insert(11);
+
+			ll.Remove(5);
+
+			auto searchResult = ll.Search(3);
+			auto nextNode = searchResult->Next();
+			Assert::AreEqual(nextNode != nullptr, true);
+			Assert::AreEqual(nextNode->Element, 7);
+
+			auto prevNode = nextNode->Prev();
+			Assert::AreEqual(prevNode != nullptr, true);
+			Assert::AreEqual(nextNode->Prev()->Element, 3);
 		}
 	};
 }

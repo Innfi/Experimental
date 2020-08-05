@@ -2,7 +2,7 @@
 #define __LINKED_LIST_HPP__
 
 
-namespace CppDemo
+namespace CppDemoLinkedList
 {
 	template<typename T> 
 	class Node {
@@ -40,10 +40,38 @@ namespace CppDemo
 			current_ = newNode;
 		}
 
-		Node<T>* Search(T item) {
+		Node<T>* Search(T item) const {
+			auto searchResult = SearchItem(item);
+			if (searchResult == nullptr) return nullptr;
+
+			return searchResult.get();
+		}
+
+		bool Remove(T item) {
+			auto targetNode = SearchItem(item);
+			if (targetNode == nullptr) return false;
+
+			auto prevNode = targetNode->prev_.lock();
+			if (prevNode == nullptr) {
+				targetNode->next_->prev_.lock() = nullptr;
+				Root = targetNode->next_;
+				return true;
+			}
+
+			auto nextNode = targetNode->next_;
+			prevNode->next_ = nextNode;
+
+			if(nextNode != nullptr) nextNode->prev_ = prevNode;
+			
+			return true;
+		}		
+
+		std::shared_ptr<Node<T>> Root;
+	private:
+		std::shared_ptr<Node<T>> SearchItem(T item) const {
 			auto temp = Root;
 			while (temp.get() != nullptr) {
-				if (temp->Element == item) return temp.get();
+				if (temp->Element == item) return temp;
 
 				temp = temp->next_;
 			}
@@ -51,8 +79,6 @@ namespace CppDemo
 			return nullptr;
 		}
 
-		std::shared_ptr<Node<T>> Root;
-	private:
 		std::shared_ptr<Node<T>> current_;
 	};
 }

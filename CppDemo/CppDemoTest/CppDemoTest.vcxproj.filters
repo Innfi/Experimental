@@ -13,18 +13,33 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Demo1LinkedList">
+      <UniqueIdentifier>{4d9830b2-edb5-464e-a4eb-f79d4a249381}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Demo2RandomSkill">
+      <UniqueIdentifier>{24d9d3e1-811b-44e4-b4ce-7709aba3f85e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CppDemoTest.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkedListTest.cpp">
+      <Filter>Demo1LinkedList</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomSkillTest.cpp">
+      <Filter>Demo2RandomSkill</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedList.hpp">
+      <Filter>Demo1LinkedList</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomSkill.hpp">
+      <Filter>Demo2RandomSkill</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
